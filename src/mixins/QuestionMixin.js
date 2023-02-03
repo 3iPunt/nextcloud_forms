@@ -21,6 +21,7 @@
  */
 import { debounce } from 'debounce'
 import { generateOcsUrl } from '@nextcloud/router'
+// TODO review if error persist
 import { showError } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
 
@@ -44,6 +45,14 @@ export default {
 		text: {
 			type: String,
 			required: true,
+		},
+
+		/**
+		 * The question img (common propierty)
+		 */
+		img: {
+			type: String || Boolean,
+			required: false,
 		},
 
 		/**
@@ -130,6 +139,16 @@ export default {
 		}, 200),
 
 		/**
+		 * Forward the required change to the parent and store to db
+		 *
+		 * @param {string} img url share img
+		 */
+		onImgChange: debounce(function(img) {
+			this.$emit('update:img', img)
+			this.saveQuestionProperty('img', img)
+		}, 200),
+
+		/**
 		 * Forward the answer(s) change to the parent
 		 *
 		 * @param {Array} values the array of answers
@@ -179,6 +198,7 @@ export default {
 					},
 				})
 			} catch (error) {
+				// TODO Review if error persist
 				showError(t('forms', 'Error while saving question'))
 				console.error(error)
 			}

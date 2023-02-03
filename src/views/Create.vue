@@ -28,8 +28,9 @@
 			{{ t('forms', 'Loading {title} …', { title: form.title }) }}
 		</EmptyContent>
 	</AppContent>
-
-	<AppContent v-else>
+	<!-- Add color to background -->
+	<AppContent v-else
+		:style="'background-color:'+formColor">
 		<!-- Show results & sidebar button -->
 		<TopBar>
 			<template #default>
@@ -53,6 +54,48 @@
 
 		<!-- Forms title & description-->
 		<header>
+			<!-- Add colorpicker component -->
+			<div class="container-fluid">
+				<ColorPicker v-model="color"
+					@input="onColorChange">
+					<button class="button btn-primary">
+						Color de Fondo
+					</button>
+				</ColorPicker>
+			</div>
+			<div class="container-fluid">
+				<label class="hidden-visually"
+					for="form-img">
+					{{ t('forms', 'Form title') }}
+				</label>
+				<input id="form-img"
+					ref="img"
+					v-model="img"
+					placeholder="Url para imagen de cabecera http://"
+					class="form-title"
+					type="text"
+					@change="onImgChange">
+				<button @click="showModal">
+					Abrir Imágenes
+				</button>
+				<Modal v-if="modal"
+					size="large"
+					container="app-content"
+					@close="closeModal">
+					<div class="modal__content">
+						<iframe :src="currentUrl"
+							width="100%"
+							height="100%"
+							frameborder="0" />
+					</div>
+				</Modal>
+			</div>
+			<div class="container-fluid">
+				<img v-if="formImg !== ''"
+					alt="Imagen de cabecera"
+					:src="formImg"
+					class="img-header">
+			</div>
 			<h2>
 				<label class="hidden-visually" for="form-title">{{ t('forms', 'Form title') }}</label>
 				<input id="form-title"
@@ -145,8 +188,14 @@ import TopBar from '../components/TopBar'
 import ViewsMixin from '../mixins/ViewsMixin'
 import SetWindowTitle from '../utils/SetWindowTitle'
 import OcsResponse2Data from '../utils/OcsResponse2Data'
+// Color picker and image modal dependence
+import ColorPicker from '@nextcloud/vue/dist/Components/ColorPicker'
+import Modal from '@nextcloud/vue/dist/Components/Modal'
+import Clipboard from 'v-clipboard'
+import Vue from 'vue'
 
 window.axios = axios
+Vue.use(Clipboard)
 
 export default {
 	name: 'Create',
@@ -161,6 +210,8 @@ export default {
 		QuestionShort,
 		QuestionMultiple,
 		TopBar,
+		ColorPicker,
+		Modal,
 	},
 
 	mixins: [ViewsMixin],
@@ -182,6 +233,11 @@ export default {
 			// Various states
 			isLoadingQuestions: false,
 			isDragging: false,
+			// Propierties to image and color
+			img: false,
+			color: '#ffffff',
+			modal: false,
+			currentUrl: '',
 		}
 	},
 
@@ -196,6 +252,14 @@ export default {
 				return this.form.title
 			}
 			return t('forms', 'New form')
+		},
+		// Default value to color
+		formColor() {
+			return (this.form.color) ? this.form.color : '#ffffff'
+		},
+		// Default value to img
+		formImg() {
+			return (this.form.img) ? this.form.img + '/preview' : ''
 		},
 
 		hasQuestions() {
@@ -235,6 +299,18 @@ export default {
 		'form.title'() {
 			SetWindowTitle(this.formTitle)
 		},
+
+		'form.color'() {
+			this.color = this.form.color
+		},
+
+		'form.img'() {
+			this.img = this.form.img
+		},
+	},
+
+	created() {
+		this.currentUrl = 'https://' + window.location.host + '/apps/files/'
 	},
 
 	beforeMount() {
@@ -247,6 +323,13 @@ export default {
 	},
 
 	methods: {
+		// Methods to modal show
+		showModal() {
+			this.modal = true
+		},
+		closeModal() {
+			this.modal = false
+		},
 		/**
 		 * Title & description save methods
 		 */
@@ -255,6 +338,15 @@ export default {
 		}, 200),
 		onDescChange: debounce(function() {
 			this.saveFormProperty('description')
+		}, 200),
+		// Event to save new data
+		onColorChange: debounce(function() {
+			this.form.color = this.color
+			this.saveFormProperty('color')
+		}, 200),
+		onImgChange: debounce(function() {
+			this.form.img = this.img
+			this.saveFormProperty('img')
 		}, 200),
 
 		/**
@@ -396,6 +488,11 @@ export default {
 	align-items: center;
 	flex-direction: column;
 
+	.modal__content{
+		width: 800px;
+		height: 600px;
+	}
+
 	header,
 	section {
 		width: 100%;
@@ -411,6 +508,11 @@ export default {
 
 		h2 {
 			margin-bottom: 0; // because the input field has enough padding
+		}
+
+		.img-header {
+			width: 100%;
+			max-height: 300px;
 		}
 
 		.form-title,

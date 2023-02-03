@@ -23,6 +23,7 @@
 <template>
 	<Question v-bind.sync="$attrs"
 		:text="text"
+		:img="img"
 		:is-required="isRequired"
 		:edit.sync="edit"
 		:read-only="readOnly"
@@ -33,13 +34,16 @@
 		:shift-drag-handle="shiftDragHandle"
 		@update:text="onTitleChange"
 		@update:isRequired="onRequiredChange"
+		@update:img="onImgChange"
 		@delete="onDelete">
 		<ul class="question__content">
 			<template v-for="(answer, index) in options">
 				<li v-if="!edit" :key="answer.id" class="question__item">
 					<!-- Answer radio/checkbox + label -->
 					<!-- TODO: migrate to radio/checkbox component once available -->
-					<input :id="`${id}-answer-${answer.id}`"
+					<!-- Only not edit and not open -->
+					<input v-if="!edit && answer.isOpen === false"
+						:id="`${id}-answer-${answer.id}`"
 						ref="checkbox"
 						:aria-checked="isChecked(answer.id)"
 						:checked="isChecked(answer.id)"
@@ -52,10 +56,36 @@
 						:type="isUnique ? 'radio' : 'checkbox'"
 						@change="onChange($event, answer.id)"
 						@keydown.enter.exact.prevent="onKeydownEnter">
-					<label v-if="!edit"
+					<label v-if="!edit && answer.isOpen === false"
 						ref="label"
 						:for="`${id}-answer-${answer.id}`"
 						class="question__label">{{ answer.text }}</label>
+					<!-- Only not edit and open -->
+					<input v-if="!edit && answer.isOpen === true"
+						:id="`${id}-answer-${answer.id}`"
+						:ref="`${id}-answer-${answer.id}`"
+						:aria-checked="isChecked(answer.id)"
+						:checked="isChecked(answer.id)"
+						:class="{
+							'radio question__radio': isUnique,
+							'checkbox question__checkbox': !isUnique,
+						}"
+						:name="`${id}-answer`"
+						:required="checkRequired(answer.id)"
+						:type="isUnique ? 'radio' : 'checkbox'"
+						@keydown.enter.exact.prevent="onKeydownEnter">
+					<label v-if="!edit && answer.isOpen === true"
+						ref="label"
+						:for="`${id}-answer-${answer.id}`"
+						class="question__label">{{ answer.text }}
+						<input :id="`${id}-answer-${answer.id}-text`"
+							ref="input-text"
+							:name="`${id}-answer-text`"
+							:required="checkRequired(answer.id)"
+							type="text"
+							class="question__input open"
+							@change="onChangeInput($event, answer.id)">
+					</label>
 				</li>
 
 				<!-- Answer text input edit -->
@@ -171,6 +201,15 @@ export default {
 				values = values.filter(id => id !== answerId)
 			}
 
+			// Emit values and remove duplicates
+			this.$emit('update:values', [...new Set(values)])
+		},
+
+		onChangeInput(event, answerId) {
+			const inputValue = event.target.value
+			const values = this.values.slice()
+			const data = { id: answerId, value: inputValue }
+			values.push(data)
 			// Emit values and remove duplicates
 			this.$emit('update:values', [...new Set(values)])
 		},
@@ -420,6 +459,11 @@ input.question__checkbox {
 	// displayed at the correct location
 	left: 0px;
 	width: 16px;
+}
+
+.open {
+	width: 75%;
+	margin-top: -7px;
 }
 
 </style>

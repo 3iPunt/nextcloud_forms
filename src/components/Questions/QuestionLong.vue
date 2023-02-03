@@ -23,6 +23,7 @@
 <template>
 	<Question v-bind.sync="$attrs"
 		:text="text"
+		:img="img"
 		:is-required="isRequired"
 		:edit.sync="edit"
 		:read-only="readOnly"
@@ -31,6 +32,7 @@
 		:warning-invalid="answerType.warningInvalid"
 		@update:text="onTitleChange"
 		@update:isRequired="onRequiredChange"
+		@update:img="onImgChange"
 		@delete="onDelete">
 		<div class="question__content">
 			<textarea ref="textarea"

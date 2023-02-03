@@ -61,7 +61,22 @@
 				</ActionButton>
 			</Actions>
 		</div>
-
+		<!-- Add image to edit  -->
+		<div class="container-fluid">
+			<input v-if="edit"
+				:value="img"
+				placeholder="Url para imagen de pregunta http://"
+				class="question__url"
+				type="text"
+				@change="onImgChange">
+		</div>
+		<div class="container-fluid">
+			<img v-if="img"
+				alt="Imagen de pregunta"
+				:src="img+'/preview'"
+				class="question__img">
+		</div>
+		<!-- Add image to edit  -->
 		<!-- Question content -->
 		<slot />
 	</li>
@@ -94,6 +109,12 @@ export default {
 		text: {
 			type: String,
 			required: true,
+		},
+		// New propierty to imagen in question
+		img: {
+			type: String || Boolean,
+			required: false,
+			default: false,
 		},
 		titlePlaceholder: {
 			type: String,
@@ -159,6 +180,12 @@ export default {
 
 		onRequiredChange(isRequired) {
 			this.$emit('update:isRequired', isRequired)
+		},
+		// Event to image change
+		onImgChange({ target }) {
+			if (target.value !== false) {
+				this.$emit('update:img', target.value)
+			}
 		},
 
 		/**
@@ -234,7 +261,10 @@ export default {
 		max-width: 100%;
 		padding: 0;
 	}
-
+	&__url, &__img {
+		width: 95%;
+		max-width: 95%;
+	}
 	&__header {
 		display: flex;
 		align-items: center;

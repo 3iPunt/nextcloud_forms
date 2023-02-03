@@ -62,6 +62,8 @@ export default {
 
 		titlePlaceholder: t('forms', 'Checkbox question title'),
 		warningInvalid: t('forms', 'This question needs a title and at least one answer!'),
+		// Only for multiple type select
+		isOpen: false,
 	},
 
 	multiple_unique: {
@@ -74,7 +76,8 @@ export default {
 
 		titlePlaceholder: t('forms', 'Multiple choice question title'),
 		warningInvalid: t('forms', 'This question needs a title and at least one answer!'),
-
+		// Only for multiple type select
+		isOpen: false,
 		// Using the same vue-component as multiple, this specifies that the component renders as multiple_unique.
 		unique: true,
 	},

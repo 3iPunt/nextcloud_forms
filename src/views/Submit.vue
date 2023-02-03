@@ -26,8 +26,13 @@
 			{{ t('forms', 'Loading {title} …', { title: form.title }) }}
 		</EmptyContent>
 	</AppContent>
-
-	<AppContent v-else>
+	<!-- Add image to edit form-->
+	<AppContent v-else
+		:style="'background-color:'+form.color">
+		<img v-if="form.img !== ''"
+			alt="Imagen de cabecera"
+			:src="form.img+'/preview'"
+			class="img-header">
 		<!-- Forms title & description-->
 		<header>
 			<h2 ref="title" class="form-title">
@@ -263,7 +268,11 @@ export default {
 	::v-deep .app-navigation-toggle {
 		display: none !important;
 	}
-
+	.img-header {
+		width: 100%;
+		max-height: 300px;
+		max-width: 750px;
+	}
 	header,
 	form {
 		width: 100%;
@@ -274,7 +283,6 @@ export default {
 
 	// Title & description header
 	header {
-		margin-top: 44px;
 		margin-bottom: 24px;
 
 		.form-title,
