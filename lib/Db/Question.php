@@ -42,6 +42,8 @@ use OCP\AppFramework\Db\Entity;
  * @method void setType(string $value)
  * @method string getText()
  * @method void setText(string $value)
+ * @method string getImg()
+ * @method void setImge(string $value)
  */
 class Question extends Entity {
 	protected $formId;
@@ -49,6 +51,7 @@ class Question extends Entity {
 	protected $type;
 	protected $isRequired;
 	protected $text;
+	protected $img;
 
 	public const TYPES = [
 		'short',
@@ -66,6 +69,7 @@ class Question extends Entity {
 		$this->addType('type', 'string');
 		$this->addType('isRequired', 'bool');
 		$this->addType('text', 'string');
+		$this->addType('img', 'string');
 	}
 
 	public function read(): array {
@@ -76,6 +80,7 @@ class Question extends Entity {
 			'type' => htmlspecialchars_decode($this->getType()),
 			'isRequired' => $this->getIsRequired(),
 			'text' => htmlspecialchars_decode($this->getText()),
+			'img' => $this->getImg(),
 		];
 	}
 }

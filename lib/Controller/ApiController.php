@@ -923,7 +923,7 @@ class ApiController extends OCSController {
 		foreach ($questions as $index => $question) {
 			$questions[$index]['mandatory'] = $question['isRequired'];
 		}
-		
+
 		$response = [
 			'submissions' => $submissions,
 			'questions' => $questions,
@@ -1007,19 +1007,33 @@ class ApiController extends OCSController {
 
 			foreach ($answerArray as $answer) {
 				// Are we using answer ids as values
-				if (in_array($question['type'], Constants::ANSWER_PREDEFINED)) {
-					// Search corresponding option, skip processing if not found
-					$optionIndex = array_search($answer, array_column($question['options'], 'id'));
+				// Add search to multiple values
+				if(is_array($answer)){
+					$optionIndex = array_search($answer['id'], array_column($question['options'], 'id'));
 					if ($optionIndex === false) {
 						continue;
 					} else {
 						$option = $question['options'][$optionIndex];
 					}
+					// Load option-text
+					$answerText = $answer['value'];
+
+				}else{
+					if (in_array($question['type'], Constants::ANSWER_PREDEFINED)) {
+						// Search corresponding option, skip processing if not found
+						$optionIndex = array_search($answer, array_column($question['options'], 'id'));
+						if ($optionIndex === false) {
+							continue;
+						} else {
+							$option = $question['options'][$optionIndex];
+						}
 
 					// Load option-text
 					$answerText = $option['text'];
-				} else {
-					$answerText = $answer; // Not a multiple-question, answerText is given answer
+					} else {
+						$answerText = $answer; // Not a multiple-question, answerText is given answer
+					}
+
 				}
 
 				$answerEntity = new Answer();
