@@ -31,6 +31,9 @@ use OCP\User\Events\UserDeletedEvent;
 
 use Psr\Log\LoggerInterface;
 
+/**
+ * @implements IEventListener<UserDeletedEvent>
+ */
 class UserDeletedListener implements IEventListener {
 
 	/** @var IJobList */
@@ -40,7 +43,7 @@ class UserDeletedListener implements IEventListener {
 	private $logger;
 
 	public function __construct(IJobList $jobList,
-								LoggerInterface $logger) {
+		LoggerInterface $logger) {
 		$this->jobList = $jobList;
 		$this->logger = $logger;
 	}

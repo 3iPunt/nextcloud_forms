@@ -31,6 +31,9 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
+/**
+ * @extends QBMapper<Option>
+ */
 class OptionMapper extends QBMapper {
 
 	/**
@@ -66,9 +69,9 @@ class OptionMapper extends QBMapper {
 		$qb->delete($this->getTableName())
 			->where(
 				$qb->expr()->eq('question_id', $qb->createNamedParameter($questionId))
-		);
+			);
 
-		$qb->execute();
+		$qb->executeStatement();
 	}
 
 	public function findById(int $optionId): Option {

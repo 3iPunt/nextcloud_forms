@@ -24,30 +24,30 @@
 
 namespace OCA\Forms\Service;
 
-use DateTimeZone;
 use DateTime;
-
-use OCA\Forms\Constants;
-use OCA\Forms\Db\FormMapper;
-use OCA\Forms\Db\QuestionMapper;
-use OCA\Forms\Db\SubmissionMapper;
-use OCA\Forms\Db\Answer;
-use OCA\Forms\Db\AnswerMapper;
-
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\Files\File;
-use OCP\Files\IRootFolder;
-use OCP\Files\NotPermittedException;
-use OCP\IConfig;
-use OCP\IL10N;
-use OCP\IUser;
-use OCP\IUserManager;
-use OCP\IUserSession;
+use DateTimeZone;
 
 use League\Csv\EncloseField;
 use League\Csv\EscapeFormula;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use OCA\Forms\Constants;
+use OCA\Forms\Db\Answer;
+
+use OCA\Forms\Db\AnswerMapper;
+use OCA\Forms\Db\FormMapper;
+use OCA\Forms\Db\QuestionMapper;
+use OCA\Forms\Db\SubmissionMapper;
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\Files\File;
+use OCP\Files\IRootFolder;
+use OCP\Files\NotPermittedException;
+use OCP\IConfig;
+
+use OCP\IL10N;
+use OCP\IUser;
+use OCP\IUserManager;
+use OCP\IUserSession;
 
 use Psr\Log\LoggerInterface;
 
@@ -71,9 +71,6 @@ class SubmissionService {
 	/** @var IConfig */
 	private $config;
 
-	/** @var IDateTimeFormatter */
-	private $dateTimeFormatter;
-
 	/** @var IL10N */
 	private $l10n;
 
@@ -87,15 +84,15 @@ class SubmissionService {
 	private $currentUser;
 
 	public function __construct(FormMapper $formMapper,
-								QuestionMapper $questionMapper,
-								SubmissionMapper $submissionMapper,
-								AnswerMapper $answerMapper,
-								IRootFolder $storage,
-								IConfig $config,
-								IL10N $l10n,
-								LoggerInterface $logger,
-								IUserManager $userManager,
-								IUserSession $userSession) {
+		QuestionMapper $questionMapper,
+		SubmissionMapper $submissionMapper,
+		AnswerMapper $answerMapper,
+		IRootFolder $storage,
+		IConfig $config,
+		IL10N $l10n,
+		LoggerInterface $logger,
+		IUserManager $userManager,
+		IUserSession $userSession) {
 		$this->formMapper = $formMapper;
 		$this->questionMapper = $questionMapper;
 		$this->submissionMapper = $submissionMapper;
@@ -159,6 +156,7 @@ class SubmissionService {
 	 * @throws NotPermittedException
 	 */
 	public function writeCsvToCloud(string $hash, string $path): string {
+		/** @var \OCP\Files\Folder|\OCP\Files\File $node */
 		$node = $this->storage->getUserFolder($this->currentUser->getUID())->get($path);
 
 		// Get Data
@@ -169,14 +167,17 @@ class SubmissionService {
 			if ($node->getExtension() === 'csv') {
 				$csvData['fileName'] = $node->getName();
 			}
+			/** @var \OCP\Files\Folder $node */
 			$node = $node->getParent();
 		}
 
 		// check if file exists, create otherwise.
 		try {
+			/** @var \OCP\Files\File $file */
 			$file = $node->get($csvData['fileName']);
 		} catch (\OCP\Files\NotFoundException $e) {
 			$node->newFile($csvData['fileName']);
+			/** @var \OCP\Files\File $file */
 			$file = $node->get($csvData['fileName']);
 		}
 

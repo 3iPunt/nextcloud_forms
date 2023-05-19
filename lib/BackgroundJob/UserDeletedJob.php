@@ -38,16 +38,19 @@ class UserDeletedJob extends QueuedJob {
 	private $logger;
 
 	public function __construct(FormMapper $formMapper,
-								ITimeFactory $time,
-								LoggerInterface $logger) {
+		ITimeFactory $time,
+		LoggerInterface $logger) {
 		parent::__construct($time);
 
 		$this->formMapper = $formMapper;
 		$this->logger = $logger;
 	}
 
-	public function run($arguments) {
-		$ownerId = $arguments['owner_id'];
+	/**
+	 * @param array $argument
+	 */
+	public function run($argument): void {
+		$ownerId = $argument['owner_id'];
 		$this->logger->info('Deleting forms for deleted user {user}', [
 			'user' => $ownerId
 		]);
