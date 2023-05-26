@@ -299,7 +299,8 @@ class SubmissionService {
 	 * @param array $answers Array of the submitted answers
 	 * @return boolean If the submission is valid
 	 */
-	public function validateSubmission(array $questions, array $answers): bool {
+	public function validateSubmission(array $questions, array $answers): bool
+	{
 
 		// Check by questions
 		foreach ($questions as $question) {
@@ -331,31 +332,32 @@ class SubmissionService {
 				if (in_array($question['type'], Constants::ANSWER_TYPES_PREDEFINED)) {
 					foreach ($answers[$questionId] as $answer) {
 						// Add multiple values save
-						if(is_array($answer)){
+						if (is_array($answer)) {
 							// Search corresponding option, return false if non-existent
 							if (array_search($answer['id'], array_column($question['options'], 'id')) === false) {
 								return false;
 							}
-						}else{
+						} else {
 							// Search corresponding option, return false if non-existent
 							if (array_search($answer, array_column($question['options'], 'id')) === false) {
 								return false;
 							}
 						}
+					}
 				}
 			}
-		}
 
-		// Check for excess answers
-		foreach ($answers as $id => $answerArray) {
-			// Search corresponding question, return false if not found
-			$questionIndex = array_search($id, array_column($questions, 'id'));
-			if ($questionIndex === false) {
-				return false;
+			// Check for excess answers
+			foreach ($answers as $id => $answerArray) {
+				// Search corresponding question, return false if not found
+				$questionIndex = array_search($id, array_column($questions, 'id'));
+				if ($questionIndex === false) {
+					return false;
+				}
 			}
-		}
 
-		return true;
+			return true;
+		}
 	}
 
 	/**
@@ -364,7 +366,7 @@ class SubmissionService {
 	 * @param string $format String with the format to validate
 	 * @return boolean If the submitted date/time is valid
 	 */
-	private function validateDateTime(string $dateStr, string $format) {
+	private function validateDateTime(string $dateStr, string $format): bool {
 		$d = DateTime::createFromFormat($format, $dateStr);
 		return $d && $d->format($format) === $dateStr;
 	}
