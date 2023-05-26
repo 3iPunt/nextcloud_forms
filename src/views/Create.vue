@@ -237,7 +237,7 @@ export default {
 			isLoadingQuestions: false,
 			isDragging: false,
 			// Propierties to image and color
-			img: false,
+			img: '',
 			color: '#ffffff',
 			modal: false,
 			currentUrl: '',
