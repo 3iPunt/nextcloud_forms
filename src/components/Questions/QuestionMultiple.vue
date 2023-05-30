@@ -228,6 +228,16 @@ export default {
 		},
 
 		/**
+		 * Is the provided answer checked ?
+		 *
+		 * @param {number} id the answer id
+		 * @return {boolean}
+		 */
+		isChecked(id) {
+			return this.values.indexOf(id) > -1
+		},
+
+		/**
 		 * Is the provided answer required ?
 		 * This is needed for checkboxes as html5
 		 * doesn't allow to require at least ONE checked.
