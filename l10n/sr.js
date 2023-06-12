@@ -111,7 +111,7 @@ OC.L10N.register(
     "Description" : "Опис",
     "Add a question" : "Додај питање",
     "Responses are anonymous." : "Одговори су анонимни.",
-    "Responses are connected to your Nextcloud account." : "Одговори су повезани са Вашим Некстклауд налогом.",
+    "Responses are connected to your account." : "Одговори су везани за ваш налог.",
     "An asterisk (*) indicates mandatory questions." : "Звездица (*) означава обавезна питања.",
     "Expired {relativeDate}." : "Истекао {relativeDate}.",
     "Expires {relativeDate}." : "Истиче {relativeDate}.",
